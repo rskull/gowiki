@@ -12,7 +12,12 @@ import (
 )
 
 var (
-	templates = template.Must(template.ParseFiles("edit.html", "view.html"))
+	tmplPath = "tmpl/"
+	dataPath = "data/"
+)
+
+var (
+	templates = template.Must(template.ParseFiles(tmplPath+"edit.html", tmplPath+"view.html"))
 	validPath = regexp.MustCompile("^/(edit|save|view)/([0-9a-zA-Z]+)$")
 	addr      = flag.Bool("addr", false, "find open address and print to final-port.txt")
 )
@@ -24,12 +29,12 @@ type Page struct {
 
 func (p *Page) save() error {
 	filename := p.Title + ".txt"
-	return ioutil.WriteFile(filename, p.Body, 0600)
+	return ioutil.WriteFile(dataPath+filename, p.Body, 0600)
 }
 
 func loadPage(title string) (*Page, error) {
 	filename := title + ".txt"
-	body, err := ioutil.ReadFile(filename)
+	body, err := ioutil.ReadFile(dataPath + filename)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +107,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		err = ioutil.WriteFile("final-port.txt", []byte(l.Addr().String()), 0644)
+		err = ioutil.WriteFile(dataPath+"final-port.txt", []byte(l.Addr().String()), 0644)
 		if err != nil {
 			log.Fatal(err)
 		}
